@@ -1,0 +1,56 @@
+body {
+  background-color: #eeeeee;
+  font-family: Verdana;
+}
+
+h1 {
+  width: fit-content;
+  margin: 0 auto;
+  color:rgb(111, 209, 210);
+}
+
+.container {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.textarea {
+  width: 810px;
+  margin: 20px auto;
+}
+
+.keyboard {
+  width: 800px;
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 7px;
+  border: 3px solid #ffffff;
+  border-radius: 5px;
+}
+
+.btn {
+  height: 45px;
+  border-radius: 5px;
+  background-color: #ffffff;
+  line-height: 45px;
+  text-align: center;
+}
+
+.btn_small {
+  width: 45px;
+}
+
+.btn_medium {
+  min-width: 55px;
+  flex-grow: 1;
+}
+
+.btn_big {
+  min-width: 85px;
+  flex-grow: 1;
+}
+
+.btn_space {
+  width: 356px;
+}
