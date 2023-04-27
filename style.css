@@ -35,6 +35,22 @@ h1 {
   background-color: #ffffff;
   line-height: 45px;
   text-align: center;
+  cursor: pointer;
+  transition: background-color 0.5s;
+}
+
+.btn:hover {
+  background-color:rgb(187, 240, 241);
+}
+
+.btn:active {
+  background-color:rgb(126, 237, 239);
+  border-radius: 20px;
+}
+
+.btn.active {
+  background-color:rgb(126, 237, 239);
+  border-radius: 20px;
 }
 
 .btn_small {
