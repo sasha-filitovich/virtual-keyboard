@@ -20,12 +20,20 @@ for (let i = 0; i < obj.length; i += 1) {
 const textarea = document.querySelector('.textarea');
 const btn = document.querySelectorAll('.btn');
 const capsBtn = document.querySelector('.CapsLock');
+let lang = 'en';
 let caps = false;
+let ctrl = false;
+let alt = false;
 // функция проверки буква ли это
 const isLetter = (el) => {
   const arr = el.className.split(' ');
   const key = arr[arr.length - 1].slice(0, -1);
   return key === 'Key';
+};
+// функция проверки специальных символов
+const isSpecial = (el) => {
+  const arr = ['[', ']', ';', "'", ',', '.', '/', 'х', 'ъ', 'ж', 'э', 'б', 'ю', 'ё', '`'];
+  return arr.some((item) => el.innerText === item || el.innerText === item.toUpperCase());
 };
 // функция смены размера буквы
 const changeValueBtn = (el) => {
@@ -38,7 +46,7 @@ const changeValueBtn = (el) => {
 // функция нажатия на Caps
 const pressCaps = () => {
   btn.forEach((el) => {
-    if (isLetter(el)) {
+    if (isLetter(el) || isSpecial(el)) {
       changeValueBtn(el);
     }
   });
@@ -52,7 +60,7 @@ const pressCaps = () => {
 // функция нажатия на Shift
 const pressShift = () => {
   btn.forEach((el) => {
-    if (isLetter(el)) {
+    if (isLetter(el) || isSpecial(el)) {
       changeValueBtn(el);
     }
   });
@@ -70,7 +78,7 @@ const pressShift = () => {
 // функция отжатия Shift
 const upShift = () => {
   btn.forEach((el) => {
-    if (isLetter(el)) {
+    if (isLetter(el) || isSpecial(el)) {
       changeValueBtn(el);
     }
   });
@@ -82,6 +90,16 @@ const upShift = () => {
     });
   });
   caps = !caps;
+};
+// функция смены языка
+const changeLang = () => {
+  lang = lang === 'en' ? 'ru' : 'en';
+  for (let i = 0; i < btn.length; i += 1) {
+    btn[i].textContent = obj[i][lang];
+    if (caps === true && (isLetter(btn[i]) || isSpecial(btn[i]))) {
+      btn[i].innerText = btn[i].textContent.toUpperCase();
+    }
+  }
 };
 // mousedown на кнопки клавиатуры на экране
 btn.forEach((x) => {
@@ -109,6 +127,9 @@ btn.forEach((x) => {
     if (x.classList.contains('ShiftLeft') || x.classList.contains('ShiftRight')) {
       pressShift();
     }
+    if (x.classList.contains('ControlLeft')) {
+      changeLang();
+    }
   });
   // отжатие кнопки shift на экране
   x.addEventListener('mouseup', () => {
@@ -122,7 +143,7 @@ document.addEventListener('keydown', (event) => {
   textarea.focus();
   btn.forEach((el) => {
     if (el.classList.contains(event.code)) {
-      if (isLetter(el)) {
+      if (isLetter(el) || isSpecial(el)) {
         event.preventDefault();
         textarea.value += el.innerText;
       }
@@ -138,6 +159,18 @@ document.addEventListener('keydown', (event) => {
     }
     pressShift();
   }
+  if (event.code === 'ControlLeft' || event.code === 'ControlRight') {
+    ctrl = !ctrl;
+    if (ctrl && alt) {
+      changeLang();
+    }
+  }
+  if (event.code === 'AltLeft' || event.code === 'AltRight') {
+    alt = !alt;
+    if (ctrl && alt) {
+      changeLang();
+    }
+  }
 });
 // отжатие клавиш на физической клавиатуре
 document.addEventListener('keyup', (event) => {
@@ -148,5 +181,11 @@ document.addEventListener('keyup', (event) => {
   });
   if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
     upShift();
+  }
+  if (event.code === 'ControlLeft' || event.code === 'ControlRight') {
+    ctrl = !ctrl;
+  }
+  if (event.code === 'AltLeft' || event.code === 'AltRight') {
+    alt = !alt;
   }
 });
