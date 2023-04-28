@@ -7,6 +7,7 @@ document.body.innerHTML = `
   <div class="keyboard"></div>
 </div>`;
 const keyboard = document.querySelector('.keyboard');
+// формирование кнопок в html
 function createBtn(num) {
   const newBtn = document.createElement('div');
   newBtn.className = obj[num].className;
@@ -18,8 +19,73 @@ for (let i = 0; i < obj.length; i += 1) {
 }
 const textarea = document.querySelector('.textarea');
 const btn = document.querySelectorAll('.btn');
+const capsBtn = document.querySelector('.CapsLock');
+let caps = false;
+// функция проверки буква ли это
+const isLetter = (el) => {
+  const arr = el.className.split(' ');
+  const key = arr[arr.length - 1].slice(0, -1);
+  return key === 'Key';
+};
+// функция смены размера буквы
+const changeValueBtn = (el) => {
+  if (caps === false) {
+    el.innerText = el.textContent.toUpperCase();
+  } else {
+    el.innerText = el.textContent.toLowerCase();
+  }
+};
+// функция нажатия на Caps
+const pressCaps = () => {
+  btn.forEach((el) => {
+    if (isLetter(el)) {
+      changeValueBtn(el);
+    }
+  });
+  caps = !caps;
+  if (caps) {
+    capsBtn.classList.add('active');
+  } else {
+    capsBtn.classList.remove('active');
+  }
+};
+// функция нажатия на Shift
+const pressShift = () => {
+  btn.forEach((el) => {
+    if (isLetter(el)) {
+      changeValueBtn(el);
+    }
+  });
+  obj.forEach((item) => {
+    if (item.alter !== undefined) {
+      btn.forEach((el) => {
+        if (el.innerText === item.en) {
+          el.innerHTML = item.alter;
+        }
+      });
+    }
+  });
+  caps = !caps;
+};
+// функция отжатия Shift
+const upShift = () => {
+  btn.forEach((el) => {
+    if (isLetter(el)) {
+      changeValueBtn(el);
+    }
+  });
+  obj.forEach((item) => {
+    btn.forEach((el) => {
+      if (el.innerText === item.alter) {
+        el.innerHTML = item.en;
+      }
+    });
+  });
+  caps = !caps;
+};
+// mousedown на кнопки клавиатуры на экране
 btn.forEach((x) => {
-  x.addEventListener('click', () => {
+  x.addEventListener('mousedown', () => {
     if (x.textContent.length === 1) {
       textarea.value += x.innerText;
     }
@@ -37,14 +103,21 @@ btn.forEach((x) => {
     if (x.classList.contains('Enter')) {
       textarea.value += '\n';
     }
+    if (x.classList.contains('CapsLock')) {
+      pressCaps();
+    }
+    if (x.classList.contains('ShiftLeft') || x.classList.contains('ShiftRight')) {
+      pressShift();
+    }
+  });
+  // отжатие кнопки shift на экране
+  x.addEventListener('mouseup', () => {
+    if (x.classList.contains('ShiftLeft') || x.classList.contains('ShiftRight')) {
+      upShift();
+    }
   });
 });
-let caps = false;
-const isLetter = (el) => {
-  const arr = el.className.split(' ');
-  const key = arr[arr.length - 1].slice(0, -1);
-  return key === 'Key';
-};
+// нажатие на клавиши на физической клавиатуре
 document.addEventListener('keydown', (event) => {
   textarea.focus();
   btn.forEach((el) => {
@@ -57,31 +130,23 @@ document.addEventListener('keydown', (event) => {
     }
   });
   if (event.code === 'CapsLock') {
-    const capsBtn = document.querySelector('.CapsLock');
-
-    // capsBtn.classList.toggle('active');
-
-    btn.forEach((el) => {
-      if (isLetter(el)) {
-        if (caps === false) {
-          el.innerText = el.textContent.toUpperCase();
-        } else {
-          el.innerText = el.textContent.toLowerCase();
-        }
-      }
-    });
-    caps = !caps;
-    if (caps) {
-      capsBtn.classList.add('active');
-    } else {
-      capsBtn.classList.remove('active');
+    pressCaps();
+  }
+  if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
+    if (event.repeat) {
+      return;
     }
+    pressShift();
   }
 });
-document.addEventListener('keyup', () => {
+// отжатие клавиш на физической клавиатуре
+document.addEventListener('keyup', (event) => {
   btn.forEach((el) => {
     if (!el.classList.contains('CapsLock')) {
       el.classList.remove('active');
     }
   });
+  if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
+    upShift();
+  }
 });
