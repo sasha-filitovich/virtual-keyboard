@@ -7,11 +7,19 @@ document.body.innerHTML = `
   <div class="keyboard"></div>
 </div>`;
 const keyboard = document.querySelector('.keyboard');
+let lang = 'en';
+// получение языка из local storage
+const getLocalStorage = () => {
+  if (localStorage.getItem('lang')) {
+    lang = localStorage.getItem('lang');
+  }
+};
+getLocalStorage();
 // формирование кнопок в html
 function createBtn(num) {
   const newBtn = document.createElement('div');
   newBtn.className = obj[num].className;
-  newBtn.textContent = obj[num].en;
+  newBtn.textContent = obj[num][lang];
   keyboard.append(newBtn);
 }
 for (let i = 0; i < obj.length; i += 1) {
@@ -20,7 +28,6 @@ for (let i = 0; i < obj.length; i += 1) {
 const textarea = document.querySelector('.textarea');
 const btn = document.querySelectorAll('.btn');
 const capsBtn = document.querySelector('.CapsLock');
-let lang = 'en';
 let caps = false;
 let ctrl = false;
 let alt = false;
@@ -68,7 +75,11 @@ const pressShift = () => {
     if (item.alter !== undefined) {
       btn.forEach((el) => {
         if (el.innerText === item.en) {
-          el.innerHTML = item.alter;
+          if (lang === 'ru' && el.innerText === '.') {
+            el.innerHTML = ',';
+          } else {
+            el.innerHTML = item.alter;
+          }
         }
       });
     }
@@ -84,8 +95,11 @@ const upShift = () => {
   });
   obj.forEach((item) => {
     btn.forEach((el) => {
+      if (lang === 'ru' && el.innerText === ',') {
+        el.innerHTML = '.';
+      }
       if (el.innerText === item.alter) {
-        el.innerHTML = item.en;
+        el.innerHTML = item[lang];
       }
     });
   });
@@ -189,3 +203,8 @@ document.addEventListener('keyup', (event) => {
     alt = !alt;
   }
 });
+// сохранение в local storage
+const setLocalStorage = () => {
+  localStorage.setItem('lang', lang);
+};
+window.addEventListener('beforeunload', setLocalStorage);
