@@ -118,22 +118,56 @@ const changeLang = () => {
 // mousedown на кнопки клавиатуры на экране
 btn.forEach((x) => {
   x.addEventListener('mousedown', () => {
-    if (x.textContent.length === 1) {
-      textarea.value += x.innerText;
+    const caret = textarea.selectionStart;
+    const beforeCaret = textarea.value.substring(0, caret);
+    const afterCaret = textarea.value.substring(textarea.selectionEnd);
+    setTimeout(() => {
+      textarea.focus();
+    }, 0);
+    // функция установки курсора
+    const caretRight = () => {
+      textarea.selectionStart = caret + 1;
+      textarea.selectionEnd = caret + 1;
+    };
+    // функция установки курсора
+    const setCaret = () => {
+      textarea.selectionStart = caret;
+      textarea.selectionEnd = caret;
+    };
+    if (x.textContent.length === 1 && x.textContent.charCodeAt(0) < 9650) {
+      textarea.value = beforeCaret + x.innerText + afterCaret;
+      caretRight();
     }
     if (x.innerText === 'Backspace') {
-      const arr = textarea.value.split('');
-      arr.splice(arr.length - 1, 1);
-      textarea.value = arr.join('');
+      if (caret !== textarea.selectionEnd) {
+        textarea.value = beforeCaret + afterCaret;
+        setCaret();
+      } else {
+        textarea.value = beforeCaret.slice(0, -1) + afterCaret;
+        textarea.selectionStart = caret - 1;
+        textarea.selectionEnd = caret - 1;
+      }
+    }
+    if (x.innerText === 'Del') {
+      if (caret !== textarea.selectionEnd) {
+        textarea.value = beforeCaret + afterCaret;
+        setCaret();
+      } else {
+        textarea.value = beforeCaret + afterCaret.slice(1);
+        setCaret();
+      }
     }
     if (x.classList.contains('Space')) {
-      textarea.value += ' ';
+      textarea.value = `${beforeCaret} ${afterCaret}`;
+      caretRight();
     }
     if (x.classList.contains('Tab')) {
-      textarea.value += '\t';
+      textarea.value = `${beforeCaret}\t${afterCaret}`;
+      caretRight();
     }
     if (x.classList.contains('Enter')) {
-      textarea.value += '\n';
+      textarea.value = `${beforeCaret}\n${afterCaret}`;
+      caretRight();
     }
     if (x.classList.contains('CapsLock')) {
       pressCaps();
@@ -155,11 +189,15 @@ btn.forEach((x) => {
 // нажатие на клавиши на физической клавиатуре
 document.addEventListener('keydown', (event) => {
   textarea.focus();
+  const caret = textarea.selectionStart;
+  const afterCaret = textarea.value.substring(textarea.selectionEnd);
   btn.forEach((el) => {
     if (el.classList.contains(event.code)) {
       if (isLetter(el) || isSpecial(el)) {
         event.preventDefault();
-        textarea.value += el.innerText;
+        textarea.value = textarea.value.substring(0, caret) + el.innerText + afterCaret;
+        textarea.selectionStart = caret + 1;
+        textarea.selectionEnd = caret + 1;
       }
       el.classList.add('active');
     }
