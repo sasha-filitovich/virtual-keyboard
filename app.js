@@ -9,12 +9,9 @@ document.body.innerHTML = `
 const keyboard = document.querySelector('.keyboard');
 let lang = 'en';
 // получение языка из local storage
-const getLocalStorage = () => {
-  if (localStorage.getItem('lang')) {
-    lang = localStorage.getItem('lang');
-  }
-};
-getLocalStorage();
+if (localStorage.getItem('lang')) {
+  lang = localStorage.getItem('lang');
+}
 // формирование кнопок в html
 function createBtn(num) {
   const newBtn = document.createElement('div');
@@ -25,22 +22,32 @@ function createBtn(num) {
 for (let i = 0; i < obj.length; i += 1) {
   createBtn(i);
 }
+//
+const description = document.createElement('p');
+description.textContent = 'Клавиатура создана в операционной системе Windows';
+document.body.append(description);
+const language = document.createElement('p');
+language.textContent = 'Для переключения языка на физической клавиатуре комбинация: ctrl + alt';
+document.body.append(language);
+const language2 = document.createElement('p');
+language2.textContent = 'Для переключения языка на виртуальной клавиатуре: левый ctrl';
+document.body.append(language2);
 const textarea = document.querySelector('.textarea');
-const btn = document.querySelectorAll('.btn');
+const buttons = document.querySelectorAll('.btn');
 const capsBtn = document.querySelector('.CapsLock');
 let caps = false;
 let ctrl = false;
 let alt = false;
 // функция проверки буква ли это
 const isLetter = (el) => {
-  const arr = el.className.split(' ');
-  const key = arr[arr.length - 1].slice(0, -1);
+  const classes = el.className.split(' ');
+  const key = classes[classes.length - 1].slice(0, -1);
   return key === 'Key';
 };
 // функция проверки специальных символов
 const isSpecial = (el) => {
-  const arr = ['[', ']', ';', "'", ',', '.', '/', 'х', 'ъ', 'ж', 'э', 'б', 'ю', 'ё', '`'];
-  return arr.some((item) => el.innerText === item || el.innerText === item.toUpperCase());
+  const specials = ['[', ']', ';', "'", ',', '.', '/', 'х', 'ъ', 'ж', 'э', 'б', 'ю', 'ё', '`'];
+  return specials.some((item) => el.innerText === item || el.innerText === item.toUpperCase());
 };
 // функция смены размера буквы
 const changeValueBtn = (el) => {
@@ -52,7 +59,7 @@ const changeValueBtn = (el) => {
 };
 // функция нажатия на Caps
 const pressCaps = () => {
-  btn.forEach((el) => {
+  buttons.forEach((el) => {
     if (isLetter(el) || isSpecial(el)) {
       changeValueBtn(el);
     }
@@ -66,57 +73,46 @@ const pressCaps = () => {
 };
 // функция нажатия на Shift
 const pressShift = () => {
-  btn.forEach((el) => {
+  buttons.forEach((el, index) => {
     if (isLetter(el) || isSpecial(el)) {
       changeValueBtn(el);
     }
-  });
-  obj.forEach((item) => {
-    if (item.alter !== undefined) {
-      btn.forEach((el) => {
-        if (el.innerText === item.en) {
-          if (lang === 'ru' && el.innerText === '.') {
-            el.innerHTML = ',';
-          } else {
-            el.innerHTML = item.alter;
-          }
-        }
-      });
+    if (obj[index].alter !== undefined && el.innerText === obj[index].en) {
+      el.innerText = obj[index].alter;
+    }
+    if (lang === 'ru' && el.innerText === '.') {
+      el.innerText = ',';
     }
   });
   caps = !caps;
 };
 // функция отжатия Shift
 const upShift = () => {
-  btn.forEach((el) => {
+  buttons.forEach((el, index) => {
     if (isLetter(el) || isSpecial(el)) {
       changeValueBtn(el);
     }
-  });
-  obj.forEach((item) => {
-    btn.forEach((el) => {
-      if (lang === 'ru' && el.innerText === ',') {
-        el.innerHTML = '.';
-      }
-      if (el.innerText === item.alter) {
-        el.innerHTML = item[lang];
-      }
-    });
+    if (el.innerText === obj[index].alter) {
+      el.innerText = obj[index][lang];
+    }
+    if (lang === 'ru' && el.innerText === ',') {
+      el.innerText = '.';
+    }
   });
   caps = !caps;
 };
 // функция смены языка
 const changeLang = () => {
   lang = lang === 'en' ? 'ru' : 'en';
-  for (let i = 0; i < btn.length; i += 1) {
-    btn[i].textContent = obj[i][lang];
-    if (caps === true && (isLetter(btn[i]) || isSpecial(btn[i]))) {
-      btn[i].innerText = btn[i].textContent.toUpperCase();
+  for (let i = 0; i < buttons.length; i += 1) {
+    buttons[i].textContent = obj[i][lang];
+    if (caps === true && (isLetter(buttons[i]) || isSpecial(buttons[i]))) {
+      buttons[i].innerText = buttons[i].textContent.toUpperCase();
     }
   }
 };
 // mousedown на кнопки клавиатуры на экране
-btn.forEach((x) => {
+buttons.forEach((x) => {
   x.addEventListener('mousedown', () => {
     const caret = textarea.selectionStart;
     const beforeCaret = textarea.value.substring(0, caret);
@@ -134,7 +130,7 @@ btn.forEach((x) => {
       textarea.selectionStart = caret;
       textarea.selectionEnd = caret;
     };
-    if (x.textContent.length === 1 && x.textContent.charCodeAt(0) < 9650) {
+    if (x.textContent.length === 1 && x.textContent.charCodeAt(0) < 9654) {
       textarea.value = beforeCaret + x.innerText + afterCaret;
       caretRight();
     }
@@ -178,6 +174,17 @@ btn.forEach((x) => {
     if (x.classList.contains('ControlLeft')) {
       changeLang();
     }
+    if (x.classList.contains('ArrowRight')) {
+      caretRight();
+    }
+    if (x.classList.contains('ArrowLeft')) {
+      textarea.selectionStart = caret - 1;
+      textarea.selectionEnd = caret - 1;
+    }
+    if (x.classList.contains('ArrowDown')) {
+      textarea.value = beforeCaret + x.innerText + afterCaret;
+      caretRight();
+    }
   });
   // отжатие кнопки shift на экране
   x.addEventListener('mouseup', () => {
@@ -191,7 +198,7 @@ document.addEventListener('keydown', (event) => {
   textarea.focus();
   const caret = textarea.selectionStart;
   const afterCaret = textarea.value.substring(textarea.selectionEnd);
-  btn.forEach((el) => {
+  buttons.forEach((el) => {
     if (el.classList.contains(event.code)) {
       if (isLetter(el) || isSpecial(el)) {
         event.preventDefault();
@@ -223,10 +230,13 @@ document.addEventListener('keydown', (event) => {
       changeLang();
     }
   }
+  if (event.code === 'MetaLeft') {
+    event.preventDefault();
+  }
 });
 // отжатие клавиш на физической клавиатуре
 document.addEventListener('keyup', (event) => {
-  btn.forEach((el) => {
+  buttons.forEach((el) => {
     if (!el.classList.contains('CapsLock')) {
       el.classList.remove('active');
     }

@@ -16,7 +16,11 @@ h1 {
 
 .textarea {
   width: 810px;
-  margin: 20px auto;
+  margin: 15px auto 3px;
+}
+
+.textarea:focus {
+  outline: none;
 }
 
 .keyboard {
@@ -36,20 +40,20 @@ h1 {
   line-height: 45px;
   text-align: center;
   cursor: pointer;
-  transition: background-color 0.5s;
+  transition: background-color 0.3s;
 }
 
 .btn:hover {
-  background-color:rgb(187, 240, 241);
+  background-color:#bbf0f1;
 }
 
 .btn:active {
-  background-color:rgb(126, 237, 239);
+  background-color:#7eedef;
   border-radius: 20px;
 }
 
 .btn.active {
-  background-color:rgb(126, 237, 239);
+  background-color:#7eedef;
   border-radius: 20px;
 }
 
@@ -69,4 +73,8 @@ h1 {
 
 .btn_space {
   width: 356px;
+}
+
+p {
+  text-align: center;
 }
