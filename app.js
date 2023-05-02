@@ -233,6 +233,12 @@ document.addEventListener('keydown', (event) => {
   if (event.code === 'MetaLeft') {
     event.preventDefault();
   }
+  if (event.code === 'Tab') {
+    event.preventDefault();
+    textarea.value = `${textarea.value.substring(0, caret)}\t${afterCaret}`;
+    textarea.selectionStart = caret + 1;
+    textarea.selectionEnd = caret + 1;
+  }
 });
 // отжатие клавиш на физической клавиатуре
 document.addEventListener('keyup', (event) => {
